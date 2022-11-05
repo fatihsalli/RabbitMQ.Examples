@@ -5,7 +5,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using RabbitMQ.Client;
 using RabbitMQ.WatermarkApp.Models;
+using RabbitMQ.WatermarkApp.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,9 +24,13 @@ namespace RabbitMQ.WatermarkApp
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //"RabbitMQClientService" ConnectionFactory properysini instance alýyoruz. RabbitMQ Clouddaki URL'imizi appsettings içine ekledik. Buradan da onu tanýmlýyoruz. Amacýmýz singleton olarak ConnectionFactory oluþturarak "RabbitMQClientService" 'e göndermek.
+            services.AddSingleton(sp => new ConnectionFactory() { Uri = new Uri(Configuration.GetConnectionString("RabbitMQ"))});
+
+            services.AddSingleton<RabbitMQClientService>();
+
             services.AddDbContext<AppDbContext>(options =>
             {
                 options.UseInMemoryDatabase(databaseName: "productDb");
@@ -35,7 +41,6 @@ namespace RabbitMQ.WatermarkApp
             services.AddControllersWithViews();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -45,7 +50,6 @@ namespace RabbitMQ.WatermarkApp
             else
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
             app.UseHttpsRedirection();
