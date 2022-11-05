@@ -18,9 +18,6 @@ namespace RabbitMQ.WatermarkApp.Services
         {
             _connectionFactory = connectionFactory;
             _logger = logger;
-            Connect();
-
-
         }
 
         //Geriye bir model yani kanal dönüyoruz.
