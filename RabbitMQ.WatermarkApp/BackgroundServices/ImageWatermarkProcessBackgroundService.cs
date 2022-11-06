@@ -49,6 +49,9 @@ namespace RabbitMQ.WatermarkApp.BackgroundServices
         //Eventi dinlemek için metotu yazıyoruz.
         private Task Consumer_Received(object sender, BasicDeliverEventArgs @event)
         {
+            //Gecikme verdik test amaçlı görmek için.
+            Task.Delay(5000).Wait();
+
             try
             {
                 var productImageCreatedEvent = JsonSerializer.Deserialize<ProductImageCreatedEvent>(Encoding.UTF8.GetString(@event.Body.ToArray()));
