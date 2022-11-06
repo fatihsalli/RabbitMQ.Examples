@@ -32,13 +32,10 @@ namespace RabbitMQ.WatermarkApp
             services.AddSingleton<RabbitMQClientService>();
             services.AddSingleton<RabbitMQPublisher>();
 
-
             services.AddDbContext<AppDbContext>(options =>
             {
                 options.UseInMemoryDatabase(databaseName: "productDb");
             });
-
-
 
             services.AddControllersWithViews();
         }
