@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using RabbitMQ.Client;
+using RabbitMQ.WatermarkApp.BackgroundServices;
 using RabbitMQ.WatermarkApp.Models;
 using RabbitMQ.WatermarkApp.Services;
 using System;
@@ -26,11 +27,12 @@ namespace RabbitMQ.WatermarkApp
 
         public void ConfigureServices(IServiceCollection services)
         {
-            //"RabbitMQClientService" ConnectionFactory properysini instance alýyoruz. RabbitMQ Clouddaki URL'imizi appsettings içine ekledik. Buradan da onu tanýmlýyoruz. Amacýmýz singleton olarak ConnectionFactory oluþturarak "RabbitMQClientService" 'e göndermek.
-            services.AddSingleton(sp => new ConnectionFactory() { Uri = new Uri(Configuration.GetConnectionString("RabbitMQ"))});
+            //"RabbitMQClientService" ConnectionFactory properysini instance alýyoruz. RabbitMQ Clouddaki URL'imizi appsettings içine ekledik. Buradan da onu tanýmlýyoruz. Amacýmýz singleton olarak ConnectionFactory oluþturarak "RabbitMQClientService" 'e göndermek."DispatchConsumersAsync" asenkron kullandýðýmýz için bu özelliði true set ettik.
+            services.AddSingleton(sp => new ConnectionFactory() { Uri = new Uri(Configuration.GetConnectionString("RabbitMQ")),DispatchConsumersAsync=true});
 
             services.AddSingleton<RabbitMQClientService>();
             services.AddSingleton<RabbitMQPublisher>();
+            services.AddHostedService<ImageWatermarkProcessBackgroundService>();
 
             services.AddDbContext<AppDbContext>(options =>
             {
